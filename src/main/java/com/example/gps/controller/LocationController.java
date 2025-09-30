@@ -26,6 +26,11 @@ public class LocationController {
     public ResponseEntity<Map<String, Object>> submitLocation(@RequestBody Location location) {
         Map<String, Object> response = new HashMap<>();
         try {
+            // 单人测试，固定用户ID为1
+            if (location.getUserId() == null) {
+                location.setUserId(1L);
+            }
+            
             Location savedLocation = locationService.saveLocation(location);
             response.put("success", true);
             response.put("message", "位置信息保存成功");
