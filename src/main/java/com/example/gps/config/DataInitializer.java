@@ -7,32 +7,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
-
+    
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
+    
     @Override
     public void run(String... args) throws Exception {
-        // 检查users表是否存在，如果不存在则创建
+        System.out.println("🚀 开始初始化GPS测试数据...");
+        
         try {
-            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS users (" +
-                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                    "username VARCHAR(255), " +
-                    "email VARCHAR(255), " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+            // 插入一些测试GPS位置数据
+            jdbcTemplate.update(
+                    "INSERT IGNORE INTO gps_locations (user_id, latitude, longitude, timestamp) VALUES " +
+                    "(1, 39.9042, 116.4074, NOW()), " +
+                    "(1, 39.9142, 116.4174, NOW()), " +
+                    "(2, 31.2304, 121.4737, NOW())");
             
-            // 检查是否已有测试用户，如果没有则插入
-            Integer count = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM users WHERE id = 1", Integer.class);
+            System.out.println("✅ GPS测试数据初始化完成!");
             
-            if (count == 0) {
-                jdbcTemplate.update(
-                        "INSERT INTO users (id, username, email) VALUES (1, 'testuser', 'test@example.com')");
-                System.out.println("✅ 已自动创建测试用户 (ID: 1)");
-            } else {
-                System.out.println("✅ 测试用户已存在 (ID: 1)");
-            }
         } catch (Exception e) {
             System.err.println("⚠️  数据初始化警告: " + e.getMessage());
         }
